@@ -1,33 +1,16 @@
----
-title: "Bellabeat"
-author: "Balaji G"
-date: "3 January 2022"
-output:
-  word_document: default
-  html_document: default
----
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-## Bellabeat
-
-Bellabeat, a high-tech company that manufactures health-focused smart products(FitBit).Develop beautifully designed technology that informs and inspires women around the world. Collecting data on activity, sleep, stress, and reproductive health has allowed Bellabeat to empower women with knowledge about their own health and habits.Mangaer wants marketing analytics team to focus on a Bellabeat product and analyze smart device usage data in order to gain insight into how people are already using their smart devices.
-I Used **R** programming to solve case study.
-
-##Ask
+#Ask
 Clear goal is to analyze smart device usage data in order to gain insight into how people are already using their smart devices.As a analyst need to answer following questions to build insight.
   1.What are some trends in smart device usage?
   2.How could these trends apply to Bellabeat customers?
   3.How could these trends help influence Bellabeat marketing strategy?
   
-##Process
+#Process
 The dataset are used from kaggle community website and the datasets are public dataset.[https://www.kaggle.com/arashnic/fitbit]
 
 There are number of different csv files of Daily activity, calories,steps,intensities,heart rate,sleep data and weight log. Data will be stored in documents folder which will serve as working directory for the project.
 
-###Exploring the FitBit Data
+##Exploring the FitBit Data
 Before uploading data, install and load the tidyverse,skimr,janitor and SQL syntax packages to execute the analysis code. I uploaded five dataframes for analysis. They are
   1.Daily activity
   2.Daily calories
@@ -60,7 +43,7 @@ colnames(weight_log)
 
 It looks like weight log includes boolean field of manual entry and there are fewer observations. This means only a certain users are actually going to log their weight.
 
-##Prepare
+#Prepare
 
 All five dataframes have same **ID Field**, so it easy to merge dataset if needed. It's look like the activity ,calories and intensities have exact same number of observations. It seems the activity table have a log of calories and intensities already. So, we should confirm that the values actually match for any given **ID** number.
 
@@ -80,7 +63,7 @@ nrow(sql_check2)
 ```
 Look like activity table has 940 observation as calories and intensities. we can remove calories and intensities datasets from analysis.
 
-##Analysis
+#Analysis
   There are more ID number in dataframe activity than sleepday and weightlog. so, i find out unique ID's.
 ```{r unique}
 n_distinct(activity$Id)
@@ -100,7 +83,7 @@ sleep_day %>% select(TotalSleepRecords,TotalMinutesAsleep,TotalTimeInBed) %>% su
 weight_log %>% select(WeightPounds,BMI) %>% summary()
 ``` 
 
-###Visualization
+##Visualization
 plot the relationship graph between the steps taken in a day and sedentary minutes and steps taken in a day and calories
 ```{r}
 ggplot(activity,mapping = aes(x=TotalSteps,y=SedentaryMinutes,color=Calories))+geom_point()
@@ -143,7 +126,7 @@ ggplot(combined,mapping = aes(x=FairlyActiveMinutes,y=Calories))+geom_point()+ge
 ``` 
  strong positive correlation between veryactive minutes and calories burned. But a moderate correlation for fairly active minutes.
  
-##Share
+#Share
   It's time to show results and insights
     1. Trends identified for daily activity monitoring of FitBit users shows positive trends when user make more steps more calories burned makes more active and negative trend for sedentary(not active).
     2. Positive trend identified for sleep data monitoring.
