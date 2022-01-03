@@ -5,7 +5,7 @@ I Used **R** programming to solve case study.
 
 ## Graph
 ### Calories vs Totalsteps
-
+![calories(vs)totalsteps](https://user-images.githubusercontent.com/96980544/147908041-6b52ffba-c105-4481-848e-eee137da27f4.png)
 ### Sleep
 
 ### Calories vs Veryactive
