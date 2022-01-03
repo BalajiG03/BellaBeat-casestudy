@@ -1,0 +1,158 @@
+---
+title: "Bellabeat"
+author: "Balaji G"
+date: "3 January 2022"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Bellabeat
+
+Bellabeat, a high-tech company that manufactures health-focused smart products(FitBit).Develop beautifully designed technology that informs and inspires women around the world. Collecting data on activity, sleep, stress, and reproductive health has allowed Bellabeat to empower women with knowledge about their own health and habits.Mangaer wants marketing analytics team to focus on a Bellabeat product and analyze smart device usage data in order to gain insight into how people are already using their smart devices.
+I Used **R** programming to solve case study.
+
+##Ask
+Clear goal is to analyze smart device usage data in order to gain insight into how people are already using their smart devices.As a analyst need to answer following questions to build insight.
+  1.What are some trends in smart device usage?
+  2.How could these trends apply to Bellabeat customers?
+  3.How could these trends help influence Bellabeat marketing strategy?
+  
+##Process
+The dataset are used from kaggle community website and the datasets are public dataset.[https://www.kaggle.com/arashnic/fitbit]
+
+There are number of different csv files of Daily activity, calories,steps,intensities,heart rate,sleep data and weight log. Data will be stored in documents folder which will serve as working directory for the project.
+
+###Exploring the FitBit Data
+Before uploading data, install and load the tidyverse,skimr,janitor and SQL syntax packages to execute the analysis code. I uploaded five dataframes for analysis. They are
+  1.Daily activity
+  2.Daily calories
+  3.sleepday
+  4.Daily intensities
+  5.Weight Log
+  
+```{r upload}
+activity<-read.csv("dailyActivity_merged.csv")
+calories<-read.csv("dailyCalories_merged.csv")
+sleep_day<-read.csv("sleepDay_merged.csv")
+intensities<-read.csv("dailyIntensities_merged.csv")
+weight_log<-read.csv("weightLogInfo_merged.csv")
+```
+
+For each dataframe we'll look at the first six values and colnames.
+
+```{r activity}
+head(activity)
+colnames(activity)
+head(calories)
+colnames(calories)
+head(sleep_day)
+colnames(sleep_day)
+head(intensities)
+colnames(intensities)
+head(weight_log)
+colnames(weight_log)
+```
+
+It looks like weight log includes boolean field of manual entry and there are fewer observations. This means only a certain users are actually going to log their weight.
+
+##Prepare
+
+All five dataframes have same **ID Field**, so it easy to merge dataset if needed. It's look like the activity ,calories and intensities have exact same number of observations. It seems the activity table have a log of calories and intensities already. So, we should confirm that the values actually match for any given **ID** number.
+
+Use SQL syntax to see if there any values in calories, intensities ae in activity table. For, this we want to create temporary datframe where we select the important columns from activity.
+
+```{r SQL}
+activity2<-activity %>% select(Id,ActivityDate,Calories)
+head(activity2)
+sql_check1<-sqldf('select * from activity2 intersect select * from calories')
+head(sql_check1)
+nrow(sql_check1)
+activity3<-activity %>% select(Id,ActivityDate,SedentaryMinutes,LightlyActiveMinutes,FairlyActiveMinutes,VeryActiveMinutes,SedentaryActiveDistance,LightActiveDistance,ModeratelyActiveDistance,VeryActiveDistance)
+head(activity3)
+sql_check2<-sqldf('select * from activity3 intersect select * from intensities')
+head(sql_check2)
+nrow(sql_check2)
+```
+Look like activity table has 940 observation as calories and intensities. we can remove calories and intensities datasets from analysis.
+
+##Analysis
+  There are more ID number in dataframe activity than sleepday and weightlog. so, i find out unique ID's.
+```{r unique}
+n_distinct(activity$Id)
+n_distinct(sleep_day$Id)
+n_distinct(weight_log$Id)
+```  
+number of observation in each dataframe
+```{r rows}
+nrow(activity)
+nrow(sleep_day)
+nrow(weight_log)
+``` 
+checking summary statistics to know about each data frame
+```{r summary}
+activity %>% select(TotalSteps,TotalDistance,SedentaryMinutes,VeryActiveMinutes) %>% summary()
+sleep_day %>% select(TotalSleepRecords,TotalMinutesAsleep,TotalTimeInBed) %>% summary()
+weight_log %>% select(WeightPounds,BMI) %>% summary()
+``` 
+
+###Visualization
+plot the relationship graph between the steps taken in a day and sedentary minutes and steps taken in a day and calories
+```{r}
+ggplot(activity,mapping = aes(x=TotalSteps,y=SedentaryMinutes,color=Calories))+geom_point()
+ggplot(activity,mapping = aes(x=TotalSteps,y=Calories))+geom_point()+geom_smooth(formula = 'y~x',method = lm)
+``` 
+
+It seems that graph steps (vs) sedentary shows negative correlation and the graph steps taken (vs) calories shows positive relationship, most total steps burns more calories. However theres a large spread towards the lower amounts.
+
+let make a residuals or the differences between the observed values and the estimated vlaue.
+```{r residuals}
+calories.lm<-lm(Calories~TotalSteps,data = activity)
+calories.res<-resid(calories.lm)
+plot(activity$TotalSteps,calories.res,ylab="Residuals",xlab = "Total Steps",main = "Calories Burned")
+abline(0,0)
+plot(density(calories.res))
+qqnorm(calories.res)
+qqline(calories.res)
+``` 
+
+So, look like the spread isn't as far statistically as graph shows.
+
+plot graph between sleep and time in bed
+
+```{r}
+ggplot(sleep_day,mapping = aes(x=TotalMinutesAsleep,y=TotalTimeInBed))+geom_point()
+``` 
+
+##Merging Datasets
+Merging activity and sleeepday dataset
+```{r}
+combined<-merge(sleep_day,activity,by="Id")
+head(combined)
+nrow(combined)
+``` 
+
+plot the graph veryactive minutes with calories and failractive minutes with calories
+```{r}
+ggplot(combined,mapping = aes(x=VeryActiveMinutes,y=Calories))+geom_point()+geom_smooth(formula = y~x,method = lm)
+ggplot(combined,mapping = aes(x=FairlyActiveMinutes,y=Calories))+geom_point()+geom_smooth(formula = y~x,method = lm)
+``` 
+ strong positive correlation between veryactive minutes and calories burned. But a moderate correlation for fairly active minutes.
+ 
+##Share
+  It's time to show results and insights
+    1. Trends identified for daily activity monitoring of FitBit users shows positive trends when user make more steps more calories burned makes more active and negative trend for sedentary(not active).
+    2. Positive trend identified for sleep data monitoring.
+    3. stong positive trend for users with very active minutes.
+  
+  Considering the above results and insights following can be suggested to achieve goal,
+    1.Positive trends are identified for more steps, very active monitoring data and negative trend identified for sedentary data.
+    2.Bellabeat customers who takes more steps or very active have postive trend and customer not active(sedentary) seems to have neagtive trend.
+    3.From these trend, Bellabeat can market products by,**Don't have to do high intensity work, calories can be burned simply by walking**.
+    
+
+
