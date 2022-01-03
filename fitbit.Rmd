@@ -6,8 +6,7 @@ Clear goal is to analyze smart device usage data in order to gain insight into h
   3.How could these trends help influence Bellabeat marketing strategy?
   
 #Process
-The dataset are used from kaggle community website and the datasets are public dataset.[https://www.kaggle.com/arashnic/fitbit]
-
+The dataset are used from kaggle community website and the datasets are public dataset.[https://www.kaggle.com/arashnic/fitbit].
 There are number of different csv files of Daily activity, calories,steps,intensities,heart rate,sleep data and weight log. Data will be stored in documents folder which will serve as working directory for the project.
 
 ##Exploring the FitBit Data
@@ -25,9 +24,7 @@ sleep_day<-read.csv("sleepDay_merged.csv")
 intensities<-read.csv("dailyIntensities_merged.csv")
 weight_log<-read.csv("weightLogInfo_merged.csv")
 ```
-
 For each dataframe we'll look at the first six values and colnames.
-
 ```{r activity}
 head(activity)
 colnames(activity)
@@ -40,14 +37,11 @@ colnames(intensities)
 head(weight_log)
 colnames(weight_log)
 ```
-
 It looks like weight log includes boolean field of manual entry and there are fewer observations. This means only a certain users are actually going to log their weight.
 
 #Prepare
-
-All five dataframes have same **ID Field**, so it easy to merge dataset if needed. It's look like the activity ,calories and intensities have exact same number of observations. It seems the activity table have a log of calories and intensities already. So, we should confirm that the values actually match for any given **ID** number.
-
-Use SQL syntax to see if there any values in calories, intensities ae in activity table. For, this we want to create temporary datframe where we select the important columns from activity.
+ All five dataframes have same **ID Field**, so it easy to merge dataset if needed. It's look like the activity ,calories and intensities have exact same number of observations. It seems the activity table have a log of calories and intensities already. So, we should confirm that the values actually match for any given **ID** number.
+  Use SQL syntax to see if there any values in calories, intensities ae in activity table. For, this we want to create temporary datframe where we select the important columns from activity.
 
 ```{r SQL}
 activity2<-activity %>% select(Id,ActivityDate,Calories)
@@ -82,14 +76,12 @@ activity %>% select(TotalSteps,TotalDistance,SedentaryMinutes,VeryActiveMinutes)
 sleep_day %>% select(TotalSleepRecords,TotalMinutesAsleep,TotalTimeInBed) %>% summary()
 weight_log %>% select(WeightPounds,BMI) %>% summary()
 ``` 
-
 ##Visualization
 plot the relationship graph between the steps taken in a day and sedentary minutes and steps taken in a day and calories
 ```{r}
 ggplot(activity,mapping = aes(x=TotalSteps,y=SedentaryMinutes,color=Calories))+geom_point()
 ggplot(activity,mapping = aes(x=TotalSteps,y=Calories))+geom_point()+geom_smooth(formula = 'y~x',method = lm)
 ``` 
-
 It seems that graph steps (vs) sedentary shows negative correlation and the graph steps taken (vs) calories shows positive relationship, most total steps burns more calories. However theres a large spread towards the lower amounts.
 
 let make a residuals or the differences between the observed values and the estimated vlaue.
@@ -102,15 +94,11 @@ plot(density(calories.res))
 qqnorm(calories.res)
 qqline(calories.res)
 ``` 
-
 So, look like the spread isn't as far statistically as graph shows.
-
 plot graph between sleep and time in bed
-
 ```{r}
 ggplot(sleep_day,mapping = aes(x=TotalMinutesAsleep,y=TotalTimeInBed))+geom_point()
 ``` 
-
 ##Merging Datasets
 Merging activity and sleeepday dataset
 ```{r}
@@ -118,13 +106,12 @@ combined<-merge(sleep_day,activity,by="Id")
 head(combined)
 nrow(combined)
 ``` 
-
 plot the graph veryactive minutes with calories and failractive minutes with calories
 ```{r}
 ggplot(combined,mapping = aes(x=VeryActiveMinutes,y=Calories))+geom_point()+geom_smooth(formula = y~x,method = lm)
 ggplot(combined,mapping = aes(x=FairlyActiveMinutes,y=Calories))+geom_point()+geom_smooth(formula = y~x,method = lm)
 ``` 
- strong positive correlation between veryactive minutes and calories burned. But a moderate correlation for fairly active minutes.
+strong positive correlation between veryactive minutes and calories burned. But a moderate correlation for fairly active minutes.
  
 #Share
   It's time to show results and insights
