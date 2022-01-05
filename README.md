@@ -3,6 +3,13 @@ Bellabeat, a high-tech company that manufactures health-focused smart products(F
 
 I Used **R** programming to solve case study.
 
+## Insights
+
+  1. Trends identified for Bellabeat(FitBit) users shows positive trends when user make more steps more calories burned makes more active and negative trend for sedentary(not active).
+
+  2. More people log their calories and steps taken.
+  
+  3. Fewer uses log sleep data and only a few are logging their weight.
 ## Graph
 ### Calories vs Totalsteps
 ![calories(vs)totalsteps](https://user-images.githubusercontent.com/96980544/147908041-6b52ffba-c105-4481-848e-eee137da27f4.png)
@@ -11,13 +18,7 @@ I Used **R** programming to solve case study.
 ![sleepdata](https://user-images.githubusercontent.com/96980544/147908130-769033d1-857c-40fa-8e25-0f508536ddaf.png)
 ### Calories vs Veryactive
 ![veryactive](https://user-images.githubusercontent.com/96980544/147908250-65190376-4634-48ed-b2ce-65c57ebee685.png)
-## Insights
 
-  1. Trends identified for Bellabeat(FitBit) users shows positive trends when user make more steps more calories burned makes more active and negative trend for sedentary(not active).
-
-  2. More people log their calories and steps taken.
-  
-  3. Fewer uses log sleep data and only a few are logging their weight.
 
 
 
